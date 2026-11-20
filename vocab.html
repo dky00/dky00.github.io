@@ -19,9 +19,9 @@
         }
       } catch {}
     </script>
-    <script type="module" crossorigin src="/assets/vocab-CoYYo23c.js"></script>
+    <script type="module" crossorigin src="/assets/vocab-BknXJmBx.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-    <link rel="stylesheet" crossorigin href="/assets/vocab-CBiazQRD.css">
+    <link rel="stylesheet" crossorigin href="/assets/vocab-CGnbALVO.css">
   </head>
   <body>
     <div id="vocab-loading" class="vocab-loading" role="status" aria-live="polite">
@@ -104,12 +104,6 @@
             </div>
             <p id="date-label" class="date-label"></p>
             <h1 id="view-title">今日学习</h1>
-            <p id="mobile-streak-label" class="mobile-streak-label">
-              <span class="streak-flame" aria-hidden="true"></span>
-              <span>连续学习</span>
-              <strong id="mobile-streak-value">0</strong>
-              <span>天</span>
-            </p>
           </div>
           <div class="topbar-actions">
             <button
@@ -130,7 +124,10 @@
           <div class="view-kicker-row">
             <div>
               <p class="eyebrow">DAILY PRACTICE</p>
-              <h2 id="learn-title">先把今天的词，用起来。</h2>
+              <h2 id="learn-title">
+                <span class="learn-title-desktop">先把今天的词，用起来。</span>
+                <span class="learn-title-mobile">今日学习</span>
+              </h2>
             </div>
             <p id="study-status-copy" class="study-status-copy"></p>
           </div>
@@ -143,10 +140,18 @@
                   <span>今日</span>
                 </div>
               </div>
-              <div>
-                <span class="metric-label">今日进度</span>
+              <div class="goal-summary-copy">
+                <div class="goal-summary-head">
+                  <span class="metric-label">今日进度</span>
+                  <p id="mobile-streak-label" class="mobile-streak-label">
+                    <span class="streak-flame" aria-hidden="true"></span>
+                    <span>连续学习</span>
+                    <strong id="mobile-streak-value">0</strong>
+                    <span>天</span>
+                  </p>
+                </div>
                 <strong id="goal-copy" class="overview-main-value">0 / 12 个词</strong>
-                <p id="goal-note">完成目标后，系统会自动收束本轮学习。</p>
+                <p id="goal-note" class="goal-note">完成目标后，系统会自动收束本轮学习。</p>
               </div>
             </div>
             <div class="overview-metric">
