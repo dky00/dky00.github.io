@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="词刻是一款轻量、专注、自动安排复习的浏览器背单词工具。"
+    />
+    <link rel="icon" href="/vocab-favicon.svg" type="image/svg+xml" />
+    <title>词刻 · 专注背单词</title>
+    <script>
+      try {
+        if (localStorage.getItem("cike-theme-v1") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch {}
+    </script>
+    <script type="module" crossorigin src="/assets/vocab-CoYYo23c.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="stylesheet" crossorigin href="/assets/vocab-CBiazQRD.css">
+  </head>
+  <body>
+    <div id="vocab-loading" class="vocab-loading" role="status" aria-live="polite">
+      <div class="loading-mark" aria-hidden="true">词</div>
+      <strong>正在整理词库</strong>
+      <p id="vocab-loading-status">加载柯林斯与计算机英语词库…</p>
+    </div>
+
+    <div id="vocab-app">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="sidebar-brand" href="/vocab.html" aria-label="词刻首页">
+          <span class="brand-mark" aria-hidden="true">词刻</span>
+        </a>
+
+        <nav class="main-nav">
+          <button class="nav-item is-active" data-view="learn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+              <path d="M8 7h8M8 11h6"></path>
+            </svg>
+            <span>学习</span>
+          </button>
+          <button class="nav-item" data-view="library" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m16 6 4 14"></path>
+              <path d="M12 6v14"></path>
+              <path d="M8 8v12"></path>
+              <path d="M4 4v16"></path>
+            </svg>
+            <span>词库</span>
+          </button>
+          <button class="nav-item" data-view="mistakes" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3Z"></path>
+              <path d="M12 9v4M12 17h.01"></path>
+            </svg>
+            <span>错词本</span>
+          </button>
+          <button class="nav-item" data-view="stats" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 3v18h18"></path>
+              <path d="m7 15 4-4 3 3 5-7"></path>
+            </svg>
+            <span>统计</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <div class="sidebar-goal">
+            <div class="sidebar-goal-row">
+              <span>今日目标</span>
+              <strong id="sidebar-goal-value">0 / 12</strong>
+            </div>
+            <div class="mini-track" aria-hidden="true">
+              <span id="sidebar-goal-fill"></span>
+            </div>
+            <div class="sidebar-streak">
+              <span class="streak-flame" aria-hidden="true"></span>
+              <span>连续</span>
+              <strong id="streak-value">0</strong>
+              <span>天</span>
+            </div>
+          </div>
+          <button id="open-settings" class="sidebar-settings" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
+              <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.08A1.7 1.7 0 0 0 4.64 8.9a1.7 1.7 0 0 0-.34-1.88L4.24 7l2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.56 1.7 1.7 0 0 0 10.03 3H10V3h4v.08A1.7 1.7 0 0 0 15.03 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06L19.8 7l-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.03H21v4h-.08A1.7 1.7 0 0 0 19.4 15Z"></path>
+            </svg>
+            <span>学习设置</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div class="topbar-copy">
+            <div class="mobile-logo" aria-hidden="true">
+              <span>词刻</span>
+            </div>
+            <p id="date-label" class="date-label"></p>
+            <h1 id="view-title">今日学习</h1>
+            <p id="mobile-streak-label" class="mobile-streak-label">
+              <span class="streak-flame" aria-hidden="true"></span>
+              <span>连续学习</span>
+              <strong id="mobile-streak-value">0</strong>
+              <span>天</span>
+            </p>
+          </div>
+          <div class="topbar-actions">
+            <button
+              id="topbar-settings"
+              class="icon-button topbar-settings"
+              type="button"
+              aria-label="打开学习设置"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"></path>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <section id="learn-view" class="view" aria-labelledby="learn-title">
+          <div class="view-kicker-row">
+            <div>
+              <p class="eyebrow">DAILY PRACTICE</p>
+              <h2 id="learn-title">先把今天的词，用起来。</h2>
+            </div>
+            <p id="study-status-copy" class="study-status-copy"></p>
+          </div>
+
+          <section class="overview-band" aria-label="今日学习概况">
+            <div class="goal-summary">
+              <div id="goal-ring" class="goal-ring">
+                <div class="goal-ring-inner">
+                  <strong id="goal-ring-value">0</strong>
+                  <span>今日</span>
+                </div>
+              </div>
+              <div>
+                <span class="metric-label">今日进度</span>
+                <strong id="goal-copy" class="overview-main-value">0 / 12 个词</strong>
+                <p id="goal-note">完成目标后，系统会自动收束本轮学习。</p>
+              </div>
+            </div>
+            <div class="overview-metric">
+              <span class="metric-label">待复习</span>
+              <strong id="due-count">0</strong>
+              <span class="metric-caption">按遗忘曲线安排</span>
+            </div>
+            <div class="overview-metric">
+              <span class="metric-label">未接触</span>
+              <strong id="new-count">0</strong>
+              <span class="metric-caption">词库剩余新词</span>
+            </div>
+            <div class="overview-metric">
+              <span class="metric-label">本轮正确率</span>
+              <strong id="session-accuracy">--</strong>
+              <span class="metric-caption">认识 + 模糊</span>
+            </div>
+          </section>
+
+          <div class="study-layout">
+            <section class="study-stage" aria-label="背单词卡片">
+              <div class="stage-head">
+                <div class="stage-meta">
+                  <span id="deck-tag" class="deck-tag">今日词汇</span>
+                  <span id="word-position">1 / 12</span>
+                </div>
+                <div class="stage-progress" aria-hidden="true">
+                  <span id="stage-progress-fill"></span>
+                </div>
+                <div class="study-mode-switch" role="group" aria-label="学习模式">
+                  <button class="study-mode-button is-active" data-study-mode="card" type="button">卡片</button>
+                  <button class="study-mode-button" data-study-mode="spelling" type="button">拼写</button>
+                </div>
+              </div>
+
+              <article
+                id="word-card"
+                class="word-card"
+                tabindex="0"
+                aria-label="单词卡片，按空格查看释义"
+              >
+                <div class="card-topline">
+                  <div class="word-badges">
+                    <span id="word-level" class="word-badge"></span>
+                    <span id="word-category" class="word-category"></span>
+                  </div>
+                  <button
+                    id="favorite-button"
+                    class="favorite-button"
+                    type="button"
+                    aria-label="收藏单词"
+                    aria-pressed="false"
+                  >
+                    <span aria-hidden="true"></span>
+                  </button>
+                </div>
+
+                <div id="word-front" class="word-front">
+                  <div class="word-main">
+                    <p id="word-text" class="word-text"></p>
+                    <div class="word-phonetic-row">
+                      <span id="word-phonetic" class="word-phonetic"></span>
+                      <button id="speak-button" class="text-icon-button" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M11 5 6 9H2v6h4l5 4V5Z"></path>
+                          <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+                          <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+                        </svg>
+                        <span>朗读</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="reveal-hint">
+                    <span class="reveal-line" aria-hidden="true"></span>
+                    <span>点击卡片或按 <kbd>Space</kbd> 查看释义</span>
+                  </div>
+                </div>
+
+                <div id="word-detail" class="word-detail" hidden>
+                  <div class="detail-heading">
+                    <div>
+                      <span id="detail-pos" class="detail-pos"></span>
+                      <strong id="detail-meaning"></strong>
+                    </div>
+                  </div>
+                  <div id="detail-example-block" class="example-block">
+                    <span class="detail-label">例句</span>
+                    <p id="detail-example"></p>
+                    <p id="detail-translation" class="example-translation"></p>
+                  </div>
+                  <div class="note-block">
+                    <span class="detail-label">记忆提示</span>
+                    <p id="detail-note"></p>
+                  </div>
+                </div>
+              </article>
+
+              <section id="spelling-panel" class="spelling-panel" hidden>
+                <div class="spelling-clue">
+                  <p class="eyebrow">SPELLING PRACTICE</p>
+                  <span id="spelling-pos" class="spelling-pos"></span>
+                  <strong id="spelling-meaning"></strong>
+                  <p id="spelling-meta"></p>
+                </div>
+                <form id="spelling-form" class="spelling-form">
+                  <label for="spelling-input">英文拼写</label>
+                  <div class="spelling-input-row">
+                    <input
+                      id="spelling-input"
+                      type="text"
+                      autocomplete="off"
+                      autocapitalize="none"
+                      spellcheck="false"
+                      placeholder="输入英文单词或短语"
+                    />
+                    <button id="spelling-submit" class="primary-button" type="submit">核对</button>
+                  </div>
+                </form>
+                <div id="spelling-result" class="spelling-result" hidden>
+                  <div>
+                    <strong id="spelling-result-title"></strong>
+                    <p id="spelling-result-copy"></p>
+                  </div>
+                  <button id="spelling-next" class="primary-button" type="button">继续</button>
+                </div>
+              </section>
+
+              <div id="reveal-panel" class="action-bar reveal-bar">
+                <button id="reveal-button" class="primary-button" type="button">
+                  <span>查看释义</span>
+                  <kbd>Space</kbd>
+                </button>
+                <p>先试着回忆，再翻面核对。</p>
+              </div>
+
+              <div id="rating-panel" class="action-bar rating-bar" hidden>
+                <button class="rating-button rating-again" data-rating="again" type="button">
+                  <span>不认识</span>
+                  <small>明天再见</small>
+                  <kbd>1</kbd>
+                </button>
+                <button class="rating-button rating-hard" data-rating="hard" type="button">
+                  <span>有点模糊</span>
+                  <small>短期复习</small>
+                  <kbd>2</kbd>
+                </button>
+                <button class="rating-button rating-good" data-rating="good" type="button">
+                  <span>认识</span>
+                  <small>拉长间隔</small>
+                  <kbd>3</kbd>
+                </button>
+              </div>
+
+              <div id="session-complete" class="session-complete" hidden>
+                <span class="complete-mark" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="m5 12 4 4L19 6"></path>
+                  </svg>
+                </span>
+                <p class="eyebrow">SESSION COMPLETE</p>
+                <h3 id="complete-title">这一轮，已经读进脑子里了。</h3>
+                <p id="complete-copy"></p>
+                <div class="complete-stats">
+                  <div><strong id="complete-count">0</strong><span>本轮词数</span></div>
+                  <div><strong id="complete-accuracy">0%</strong><span>正确率</span></div>
+                  <div><strong id="complete-streak">0</strong><span>连续天数</span></div>
+                </div>
+                <button id="next-session-button" class="primary-button" type="button">
+                  再学一组
+                </button>
+              </div>
+            </section>
+
+            <aside class="session-aside" aria-label="本轮学习安排">
+              <div class="aside-head">
+                <div>
+                  <p class="eyebrow">TODAY'S QUEUE</p>
+                  <h3>本轮安排</h3>
+                </div>
+                <span id="queue-length" class="queue-count">0 词</span>
+              </div>
+              <ol id="queue-list" class="queue-list"></ol>
+              <div class="aside-tip">
+                <span class="tip-number">01</span>
+                <div>
+                  <strong>不要急着翻面</strong>
+                  <p>先主动回忆一遍，哪怕答案不完整，也比直接看释义记得更牢。</p>
+                </div>
+              </div>
+              <div class="aside-tip">
+                <span class="tip-number">02</span>
+                <div>
+                  <strong>如实评价</strong>
+                  <p>“模糊”比“认识”更诚实时，就选模糊。系统会据此缩短下一次复习间隔。</p>
+                </div>
+              </div>
+              <div class="keyboard-note">
+                <span>快捷键</span>
+                <p><kbd>Space</kbd> 翻面 <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 评价</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="library-view" class="view" aria-labelledby="library-title" hidden>
+          <div class="view-kicker-row library-heading">
+            <div>
+              <p class="eyebrow">WORD LIBRARY</p>
+              <h2 id="library-title">把遇到过的词，收进自己的册子。</h2>
+            </div>
+            <div class="library-summary">
+              <span><strong id="library-total">0</strong> 总词数</span>
+              <span><strong id="library-mastered">0</strong> 已掌握</span>
+            </div>
+          </div>
+
+          <section class="learning-decks" aria-labelledby="learning-decks-title">
+            <div class="deck-picker-head">
+              <div>
+                <p class="eyebrow">LEARNING SCOPE</p>
+                <h3 id="learning-decks-title">选择学习词库</h3>
+                <p>可同时选择多个词库，学习队列会从已选范围中自动抽取。</p>
+              </div>
+              <div class="deck-picker-actions">
+                <span id="active-deck-summary" class="queue-count">0 个词库</span>
+                <button id="toggle-all-decks" class="text-button" type="button">取消全选</button>
+              </div>
+            </div>
+            <div id="deck-grid" class="deck-grid"></div>
+          </section>
+
+          <div class="library-toolbar">
+            <label class="search-field">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4-4"></path>
+              </svg>
+              <input
+                id="library-search"
+                type="search"
+                placeholder="搜索单词或中文释义"
+                autocomplete="off"
+              />
+            </label>
+            <label class="deck-filter-field">
+              <span>词库筛选</span>
+              <span id="library-deck-value" class="deck-filter-value">全部词库 · 15633</span>
+              <select id="library-deck-filter" aria-label="按词库筛选">
+                <option value="all">全部词库</option>
+              </select>
+            </label>
+            <div class="filter-tabs" role="group" aria-label="词库筛选">
+              <button class="filter-tab is-active" data-filter="all" type="button">全部</button>
+              <button class="filter-tab" data-filter="new" type="button">未学</button>
+              <button class="filter-tab" data-filter="due" type="button">待复习</button>
+              <button class="filter-tab" data-filter="mastered" type="button">已掌握</button>
+              <button class="filter-tab" data-filter="favorite" type="button">收藏</button>
+            </div>
+          </div>
+
+          <div class="word-table-head" aria-hidden="true">
+            <span>单词</span>
+            <span>释义</span>
+            <span>状态</span>
+            <span>下次复习</span>
+          </div>
+          <div id="library-list" class="library-list"></div>
+          <div id="library-empty" class="empty-state" hidden>
+            <strong>没有找到匹配的单词</strong>
+            <p>换一个关键词或筛选条件试试。</p>
+          </div>
+          <div id="library-pagination" class="library-pagination" hidden>
+            <button id="library-prev" class="secondary-button" type="button">上一页</button>
+            <span id="library-page-info">第 1 / 1 页</span>
+            <button id="library-next" class="secondary-button" type="button">下一页</button>
+          </div>
+        </section>
+
+        <section id="mistakes-view" class="view" aria-labelledby="mistakes-title" hidden>
+          <div class="view-kicker-row">
+            <div>
+              <p class="eyebrow">WEAK WORDS</p>
+              <h2 id="mistakes-title">错词本</h2>
+            </div>
+            <p class="study-status-copy">连续答对两次后，单词会自动移出错词本。</p>
+          </div>
+
+          <div class="mistake-summary-grid">
+            <article class="mistake-summary-card">
+              <span class="metric-label">待巩固单词</span>
+              <strong id="mistake-word-count">0</strong>
+              <p>次回忆中出现过遗忘或模糊</p>
+            </article>
+            <article class="mistake-summary-card">
+              <span class="metric-label">累计错词次数</span>
+              <strong id="mistake-total-count">0</strong>
+              <p>不认识 + 模糊反馈</p>
+            </article>
+            <button id="start-mistake-review" class="primary-button mistake-review-button" type="button">
+              开始错词复习
+            </button>
+          </div>
+
+          <div id="mistake-list" class="mistake-list"></div>
+          <div id="mistake-pagination" class="library-pagination" hidden>
+            <button id="mistake-prev" class="secondary-button" type="button">上一页</button>
+            <span id="mistake-page-info">第 1 / 1 页</span>
+            <button id="mistake-next" class="secondary-button" type="button">下一页</button>
+          </div>
+          <div id="mistake-empty" class="empty-state" hidden>
+            <strong>错词本还是空的</strong>
+            <p>学习中标记为“不认识”或“有点模糊”的词会出现在这里。</p>
+          </div>
+        </section>
+
+        <section id="stats-view" class="view" aria-labelledby="stats-title" hidden>
+          <div class="view-kicker-row">
+            <div>
+              <p class="eyebrow">LEARNING SIGNALS</p>
+              <h2 id="stats-title">看见积累，而不是只盯着数字。</h2>
+            </div>
+            <p class="study-status-copy">统计只保存在当前浏览器。</p>
+          </div>
+
+          <div class="stats-card-grid">
+            <article class="stat-card stat-card-primary">
+              <span class="metric-label">累计学习</span>
+              <strong id="stat-total-reviewed">0</strong>
+              <p>次有效回忆</p>
+            </article>
+            <article class="stat-card">
+              <span class="metric-label">已掌握</span>
+              <strong id="stat-mastered">0</strong>
+              <p>复习间隔达到 21 天</p>
+            </article>
+            <article class="stat-card">
+              <span class="metric-label">连续学习</span>
+              <strong id="stat-streak">0</strong>
+              <p>天，保持小步前进</p>
+            </article>
+          </div>
+
+          <div class="analytics-layout">
+            <section class="activity-panel" aria-labelledby="activity-title">
+              <div class="panel-heading activity-heading">
+                <div>
+                  <p class="eyebrow">LEARNING TREND</p>
+                  <h3 id="activity-title">学习趋势</h3>
+                </div>
+                <span id="chart-total" class="queue-count">0 词</span>
+              </div>
+              <div class="stats-range-bar">
+                <div class="stats-range-tabs" role="group" aria-label="统计时间范围">
+                  <button class="range-tab is-active" data-stat-range="7d" type="button">近 7 天</button>
+                  <button class="range-tab" data-stat-range="30d" type="button">近一月</button>
+                  <button class="range-tab" data-stat-range="180d" type="button">近半年</button>
+                  <button class="range-tab" data-stat-range="365d" type="button">近一年</button>
+                  <button class="range-tab" data-stat-range="custom" type="button">自选</button>
+                </div>
+                <div id="custom-range-fields" class="custom-range-fields" hidden>
+                  <label>
+                    <span>开始</span>
+                    <input id="custom-range-start" type="date" />
+                  </label>
+                  <label>
+                    <span>结束</span>
+                    <input id="custom-range-end" type="date" />
+                  </label>
+                  <button id="apply-custom-range" class="secondary-button" type="button">应用</button>
+                </div>
+              </div>
+              <div class="chart-meta">
+                <span id="chart-range-label">最近 7 天</span>
+                <span>点击数据点查看当日或区间明细</span>
+              </div>
+              <div id="activity-chart" class="activity-chart line-chart"></div>
+              <div id="chart-detail" class="chart-detail" aria-live="polite"></div>
+            </section>
+
+            <section class="mastery-panel" aria-labelledby="mastery-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">MASTERY</p>
+                  <h3 id="mastery-title">词库掌握度</h3>
+                </div>
+              </div>
+              <div class="mastery-visual">
+                <div id="mastery-ring" class="mastery-ring">
+                  <div>
+                    <strong id="mastery-percent">0%</strong>
+                    <span>已掌握</span>
+                  </div>
+                </div>
+                <div class="mastery-legend">
+                  <div><span class="legend-dot learned"></span><span>学习中</span><strong id="learning-count">0</strong></div>
+                  <div><span class="legend-dot untouched"></span><span>未接触</span><strong id="untouched-count">0</strong></div>
+                  <div><span class="legend-dot mastered"></span><span>已掌握</span><strong id="mastered-count">0</strong></div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="calendar-panel" aria-labelledby="calendar-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">STUDY CALENDAR</p>
+                <h3 id="calendar-title">最近一年学习日历</h3>
+              </div>
+            </div>
+            <div class="heatmap-layout">
+              <div class="heatmap-weekdays" aria-hidden="true">
+                <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+              </div>
+              <div id="heatmap-scroll" class="heatmap-scroll">
+                <div id="heatmap-months" class="heatmap-months"></div>
+                <div id="study-heatmap" class="study-heatmap" aria-label="最近一年学习热力图"></div>
+              </div>
+            </div>
+            <div class="heatmap-footer">
+              <p id="heatmap-detail">点击日期方块查看当天统计。</p>
+              <div class="heatmap-legend" aria-label="学习强度图例">
+                <span>少</span>
+                <i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i>
+                <span>多</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="recent-panel" aria-labelledby="recent-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">RECENTLY REVIEWED</p>
+                <h3 id="recent-title">最近复习</h3>
+              </div>
+            </div>
+            <div id="recent-list" class="recent-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="settings-dialog" class="app-dialog settings-dialog">
+      <form method="dialog">
+        <header class="dialog-head">
+          <div>
+            <p class="eyebrow">PREFERENCES</p>
+            <h2>学习设置</h2>
+          </div>
+          <button class="dialog-close" type="submit" aria-label="关闭设置">×</button>
+        </header>
+        <div class="setting-row">
+          <div>
+            <strong>每日新词目标</strong>
+            <p>一轮完成多少词由这个数字决定。</p>
+          </div>
+          <div class="stepper" role="group" aria-label="每日新词目标">
+            <button id="goal-minus" type="button" aria-label="减少目标">−</button>
+            <input
+              id="goal-setting-value"
+              type="number"
+              min="1"
+              step="1"
+              value="12"
+              inputmode="numeric"
+              aria-label="每日新词目标数值"
+            />
+            <button id="goal-plus" type="button" aria-label="增加目标">+</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <strong>自动朗读</strong>
+            <p>翻面后自动播放一次英文发音。</p>
+          </div>
+          <label class="switch">
+            <input id="auto-speak-setting" type="checkbox" />
+            <span></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <strong>夜间模式</strong>
+            <p>切换深色界面，减轻夜间学习时的屏幕亮度。</p>
+          </div>
+          <label class="switch">
+            <input id="theme-setting" type="checkbox" />
+            <span></span>
+          </label>
+        </div>
+        <div class="settings-data-section">
+          <div class="settings-data-heading">
+            <div>
+              <strong>学习数据备份</strong>
+              <p>导出学习进度、错词、统计和设置；也可以从备份文件恢复。</p>
+            </div>
+          </div>
+          <div class="backup-actions">
+            <button id="export-backup" class="secondary-button" type="button">导出备份</button>
+            <button id="import-backup" class="secondary-button" type="button">导入备份</button>
+            <input id="backup-file" type="file" accept="application/json,.json" hidden />
+          </div>
+          <p id="backup-status" class="backup-status">建议定期导出一份，避免清理浏览器数据后丢失进度。</p>
+        </div>
+        <div class="settings-data-section settings-clear-section">
+          <div class="settings-data-heading">
+            <div>
+              <strong>清除学习数据</strong>
+              <p>删除全部学习进度、错词、统计和复习安排，此操作无法撤销。</p>
+            </div>
+          </div>
+          <div class="clear-data-actions">
+            <span>建议先导出一份学习数据备份。</span>
+            <button id="reset-progress" class="danger-button" type="button">清除学习记录</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="word-dialog" class="app-dialog word-dialog">
+      <form method="dialog">
+        <header class="dialog-head">
+          <div>
+            <p id="dialog-word-level" class="eyebrow"></p>
+            <h2 id="dialog-word-text"></h2>
+          </div>
+          <button class="dialog-close" type="submit" aria-label="关闭单词详情">×</button>
+        </header>
+        <p id="dialog-word-phonetic" class="dialog-phonetic"></p>
+        <div class="dialog-meaning">
+          <span id="dialog-word-pos"></span>
+          <strong id="dialog-word-meaning"></strong>
+        </div>
+        <div id="dialog-example-block" class="dialog-example">
+          <p id="dialog-word-example"></p>
+          <p id="dialog-word-translation"></p>
+        </div>
+        <div class="dialog-note">
+          <span>记忆提示</span>
+          <p id="dialog-word-note"></p>
+        </div>
+        <div class="dialog-footer word-dialog-footer">
+          <button id="dialog-speak" class="secondary-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5 6 9H2v6h4l5 4V5Z"></path>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            </svg>
+            朗读
+          </button>
+          <button id="dialog-favorite" class="secondary-button" type="button">收藏</button>
+          <button id="dialog-add-queue" class="primary-button" type="button">加入本轮</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
